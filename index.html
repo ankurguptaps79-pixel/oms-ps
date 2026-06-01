@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pradeep Sales — Order Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-dot" id="toastDot"></div>
+  <div>
+    <div class="toast-title" id="toastTitle"></div>
+    <div class="toast-body" id="toastBody"></div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="brand">
+      <div class="brand-name"><em>Pradeep</em> Sales</div>
+      <div class="brand-sub">Order Management</div>
+    </div>
+    <div class="nav">
+      <div class="nav-section-label">Operations</div>
+      <div class="nav-item active" id="nav-dashboard" onclick="show('dashboard')">
+        <span class="nav-icon">◈</span> Dashboard
+      </div>
+      <div class="nav-item" id="nav-board" onclick="show('board')">
+        <span class="nav-icon">⊞</span> Live Board
+        <span class="nav-count" id="nc-open">0</span>
+      </div>
+      <div class="nav-item" id="nav-orders" onclick="show('orders')">
+        <span class="nav-icon">≡</span> All Orders
+      </div>
+      <div class="nav-section-label" style="margin-top:6px">Tools</div>
+      <div class="nav-item" id="nav-portal" onclick="show('portal')">
+        <span class="nav-icon">⊙</span> Retailer Portal
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="user-avatar">A</div>
+        <div>
+          <div class="user-name">Ankur Gupta</div>
+          <div class="user-role">Admin</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="pageTitle">Dashboard</div>
+        <div class="topbar-sub" id="pageSub"><span class="live">Live</span></div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-outline btn-sm" onclick="show('portal')">🔗 Retailer Track</button>
+        <button class="btn btn-primary btn-sm" onclick="openNew()">+ New Order</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="view active" id="view-dashboard">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-num" id="k-total">0</div>
+            <div class="stat-note">All time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Open Orders</div>
+            <div class="stat-num" id="k-open">0</div>
+            <div class="stat-note">In progress</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Dispatched Today</div>
+            <div class="stat-num" id="k-done">0</div>
+            <div class="stat-note">Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">SLA Alerts</div>
+            <div class="stat-num" id="k-sla" style="color:var(--accent)">0</div>
+            <div class="stat-note">Need attention</div>
+          </div>
+        </div>
+
+        <div class="sec-head">
+          <div>
+            <div class="sec-title">Recent Orders</div>
+            <div class="sec-sub">Latest activity</div>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="show('orders')">View all →</button>
+        </div>
+
+        <div class="table-wrap" id="dashTable">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">No orders yet</div>
+            <div class="empty-sub">Click <strong>+ New Order</strong> to get started</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── LIVE BOARD ── -->
+      <div class="view" id="view-board">
+        <div class="pipeline" id="pipeline"></div>
+      </div>
+
+      <!-- ── ALL ORDERS ── -->
+      <div class="view" id="view-orders">
+        <div class="filter-bar">
+          <div class="search-wrap">
+            <input type="text" placeholder="Search orders, retailers…" id="srch" oninput="renderOrders()">
+          </div>
+          <select class="f-select" id="fStatus" onchange="renderOrders()">
+            <option value="">All Statuses</option>
+            <option value="received">Received</option>
+            <option value="processing">Processing</option>
+            <option value="billing">Billing</option>
+            <option value="dispatched">Dispatched</option>
+          </select>
+          <select class="f-select" id="fPriority" onchange="renderOrders()">
+            <option value="">All Priorities</option>
+            <option value="normal">Normal</option>
+            <option value="urgent">Urgent</option>
+            <option value="critical">Critical</option>
+          </select>
+          <select class="f-select" id="fSource" onchange="renderOrders()">
+            <option value="">All Sources</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="phone">Phone</option>
+            <option value="salesman">Salesman</option>
+            <option value="portal">Portal</option>
+          </select>
+          <button class="btn btn-outline btn-sm" onclick="exportPDF()">↓ PDF</button>
+          <button class="btn btn-outline btn-sm" onclick="exportCSV()">↓ CSV</button>
+        </div>
+
+        <div class="table-wrap" id="ordersTable">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-title">No orders yet</div>
+            <div class="empty-sub">Click <strong>+ New Order</strong> to get started</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PORTAL ── -->
+      <div class="view" id="view-portal">
+        <div class="portal-wrap">
+          <div style="text-align:center;margin-bottom:24px">
+            <div style="font-family:var(--serif);font-size:22px;margin-bottom:4px"><em>Pradeep</em> Sales</div>
+            <div style="font-size:13px;color:var(--text3)">Track your spare parts order</div>
+          </div>
+          <div class="portal-card">
+            <div style="margin-bottom:16px">
+              <div class="label" style="margin-bottom:6px;font-size:13px">Enter Order ID</div>
+              <div style="display:flex;gap:8px">
+                <input type="text" class="input" id="portalInput" placeholder="e.g. ORD-240901-001" style="font-size:14px">
+                <button class="btn btn-primary" onclick="lookupPortal()">Track →</button>
+              </div>
+              <div style="font-size:11px;color:var(--text3);margin-top:6px">Your Order ID was sent when the order was placed.</div>
+            </div>
+          </div>
+          <div id="portalResult" style="display:none;margin-top:14px">
+            <div class="portal-card" id="portalCard"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- NEW ORDER MODAL -->
+<div class="overlay" id="newModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">New Order</div>
+        <div class="modal-sub" id="newOrderId">Auto-generating ID…</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('newModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field">
+          <label class="label">Order ID</label>
+          <input type="text" class="input" id="f-id" readonly>
+        </div>
+        <div class="field">
+          <label class="label">Date &amp; Time</label>
+          <input type="text" class="input" id="f-time" readonly>
+        </div>
+
+        <div class="section-divider">Retailer</div>
+
+        <div class="field">
+          <label class="label">Retailer Name <span class="req">*</span></label>
+          <input type="text" class="input" id="f-retailer" placeholder="e.g. Sharma Auto Parts">
+        </div>
+        <div class="field">
+          <label class="label">Mobile Number <span class="req">*</span></label>
+          <input type="text" class="input" id="f-mobile" placeholder="+91 XXXXX XXXXX">
+        </div>
+        <div class="field">
+          <label class="label">Area / Route</label>
+          <input type="text" class="input" id="f-area" placeholder="e.g. Phulpur, Naini">
+        </div>
+        <div class="field">
+          <label class="label">Order Source</label>
+          <select class="select" id="f-source">
+            <option value="whatsapp">WhatsApp</option>
+            <option value="phone">Phone Call</option>
+            <option value="salesman">Salesman</option>
+            <option value="portal">Portal</option>
+          </select>
+        </div>
+
+        <div class="section-divider">Order Details</div>
+
+        <div class="field">
+          <label class="label">Salesman</label>
+          <select class="select" id="f-salesman">
+            <option>Amit Sharma</option>
+            <option>Vijay Gupta</option>
+            <option>Rohit Tiwari</option>
+            <option>Deepak Yadav</option>
+            <option>Self / Direct</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label">Priority</label>
+          <select class="select" id="f-priority">
+            <option value="normal">Normal  (2 hr SLA)</option>
+            <option value="urgent">Urgent  (30 min SLA)</option>
+            <option value="critical">Critical (15 min SLA)</option>
+          </select>
+        </div>
+
+        <div class="field span2">
+          <label class="label">Remarks</label>
+          <textarea class="textarea" id="f-remarks" placeholder="Part numbers, special instructions…"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal('newModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveOrder()">Create Order →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="d-id">Order Detail</div>
+        <div class="modal-sub" id="d-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('detailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="d-body"></div>
+  </div>
+</div>
+
+<!-- Firebase v8 CDN — loads as globals (firebase.app, firebase.firestore) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<!-- DB error bar — shown if Firebase config is missing/wrong -->
+<div id="dbErrorBar" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#fef2f2;border-bottom:2px solid #dc2626;padding:10px 20px;font-size:13px;color:#dc2626;align-items:center;gap:10px;">
+  ⚠️ Firebase connection error: <span></span>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
