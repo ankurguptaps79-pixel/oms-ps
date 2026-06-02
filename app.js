@@ -38,6 +38,55 @@ const db          = firebase.firestore();
 const ORDERS_COL  = db.collection("orders");
 
 // ─────────────────────────────────────────────────────────────
+//  SIMPLE PASSKEY LOGIN
+// ─────────────────────────────────────────────────────────────
+
+const PASSKEY = "9415";   // ← change this anytime
+
+function checkLogin() {
+  const stored = sessionStorage.getItem('oms_auth');
+  if (stored === PASSKEY) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appLayout').style.display   = 'flex';
+    startListener();
+  }
+}
+
+function doLogin() {
+  const val  = document.getElementById('loginPassword').value.trim();
+  const errEl = document.getElementById('loginError');
+
+  if (val === PASSKEY) {
+    sessionStorage.setItem('oms_auth', PASSKEY);
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appLayout').style.display   = 'flex';
+    errEl.style.display = 'none';
+    startListener();
+  } else {
+    errEl.textContent   = 'Incorrect passkey. Please try again.';
+    errEl.style.display = 'block';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginPassword').focus();
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('oms_auth');
+  document.getElementById('appLayout').style.display   = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginPassword').value = '';
+  toast('Signed out', 'See you next time!', '#6b6860');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Enter key submits
+  document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doLogin();
+  });
+  // Auto-check if already logged in this session
+  checkLogin();
+});
+// ─────────────────────────────────────────────────────────────
 //  LOCAL STATE  (kept in sync from Firestore listener)
 // ─────────────────────────────────────────────────────────────
 
