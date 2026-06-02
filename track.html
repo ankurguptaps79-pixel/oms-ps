@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Track Your Order — Pradeep Sales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@300;400;500;600&family=Instrument+Serif:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #f5f3ef;
+  --surface:  #ffffff;
+  --border:   #e5e2db;
+  --border2:  #d0ccc4;
+  --text:     #1a1916;
+  --text2:    #5c5850;
+  --text3:    #9c9690;
+  --accent:   #d4570e;
+  --accent2:  #f06b1a;
+  --blue:     #1e5fa8;
+  --green:    #1a7a4a;
+  --amber:    #b5650a;
+  --purple:   #5b3f9e;
+  --red:      #dc2626;
+  --font:     'Instrument Sans', sans-serif;
+  --serif:    'Instrument Serif', serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-brand {
+  font-family: var(--serif);
+  font-size: 20px;
+  color: var(--text);
+}
+.header-brand em { color: var(--accent); font-style: italic; }
+
+.header-sub {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.back-link {
+  font-size: 12px;
+  color: var(--text3);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.14s;
+}
+.back-link:hover { color: var(--accent); }
+
+/* ── PAGE ── */
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* ── SEARCH BOX ── */
+.search-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.search-heading {
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.search-heading em { color: var(--accent); font-style: italic; }
+
+.search-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+.search-row {
+  display: flex;
+  gap: 8px;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.search-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--text);
+  letter-spacing: 0.04em;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(212,87,14,0.08);
+}
+
+.search-input::placeholder { color: var(--text3); letter-spacing: 0; }
+
+.search-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.14s;
+  white-space: nowrap;
+}
+
+.search-btn:hover { background: #c04d0c; }
+
+.search-hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* ── ERROR / NOT FOUND ── */
+.not-found {
+  background: #fff8f7;
+  border: 1px solid #fcd9cc;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  display: none;
+  margin-bottom: 20px;
+}
+
+.not-found-icon { font-size: 28px; margin-bottom: 8px; }
+.not-found-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.not-found-sub { font-size: 13px; color: var(--text3); }
+
+/* ── RESULT CARD ── */
+.result { display: none; }
+
+/* Order header */
+.order-header {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 26px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.order-id-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+
+.order-id {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.order-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.order-status-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.spl-received   { background: #eaf1fb; color: var(--blue); }
+.spl-processing { background: #fef5e7; color: var(--amber); }
+.spl-billing    { background: #f0ecfa; color: var(--purple); }
+.spl-dispatched { background: #e8f5ee; color: var(--green); }
+
+.order-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-key {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.meta-val {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* SLA / ETA Banner */
+.eta-banner {
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.eta-banner.green  { background: #f0fdf4; border: 1px solid #bbf7d0; color: var(--green); }
+.eta-banner.amber  { background: #fffbeb; border: 1px solid #fde68a; color: var(--amber); }
+.eta-banner.red    { background: #fff1f2; border: 1px solid #fecdd3; color: var(--red); }
+.eta-banner.blue   { background: #eff6ff; border: 1px solid #bfdbfe; color: var(--blue); }
+
+.eta-icon { font-size: 22px; flex-shrink: 0; }
+.eta-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
+
+/* ── PROGRESS TRACKER ── */
+.progress-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 26px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-bottom: 20px;
+}
+
+/* Horizontal stepper */
+.stepper {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.stepper-line {
+  position: absolute;
+  top: 19px;
+  left: 19px;
+  right: 19px;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.stepper-progress {
+  position: absolute;
+  top: 19px;
+  left: 19px;
+  height: 2px;
+  background: var(--green);
+  z-index: 1;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.step-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.step.done .step-circle {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.step.current .step-circle {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(212,87,14,0.12);
+  animation: pulsering 2s infinite;
+}
+
+.step.pending .step-circle {
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--text3);
+}
+
+@keyframes pulsering {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(212,87,14,0.12); }
+  50%       { box-shadow: 0 0 0 8px rgba(212,87,14,0.04); }
+}
+
+.step-info { text-align: center; }
+
+.step-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  line-height: 1.2;
+}
+
+.step.done .step-name    { color: var(--green); }
+.step.current .step-name { color: var(--accent); }
+
+.step-time {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.step.done .step-time    { color: var(--text2); }
+.step.current .step-time { color: var(--accent); font-weight: 500; }
+
+/* ── TIMELINE ── */
+.timeline-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 26px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  margin-bottom: 14px;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tl-row {
+  display: flex;
+  gap: 14px;
+  padding-bottom: 20px;
+  position: relative;
+}
+
+.tl-row:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 30px;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.tl-row:last-child { padding-bottom: 0; }
+
+.tl-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  position: relative;
+  z-index: 1;
+  border: 2px solid;
+}
+
+.tl-done    { background: #e8f5ee; border-color: var(--green);  color: var(--green); }
+.tl-current { background: #fdf0e9; border-color: var(--accent); color: var(--accent); }
+.tl-pending { background: var(--bg); border-color: var(--border); color: var(--text3); opacity: 0.45; }
+
+.tl-content { flex: 1; padding-top: 4px; }
+
+.tl-stage {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.tl-pending .tl-content .tl-stage { color: var(--text3); }
+
+.tl-when { font-size: 12px; color: var(--text3); }
+.tl-dur  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+.tl-badge {
+  margin-left: auto;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.tb-done    { background: #e8f5ee; color: var(--green); }
+.tb-current { background: #fdf0e9; color: var(--accent); }
+.tb-pending { background: var(--bg); color: var(--text3); }
+
+/* ── PENDING STEPS CARD ── */
+.pending-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 26px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  margin-bottom: 14px;
+}
+
+.pending-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pending-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--bg);
+  border-radius: 7px;
+  opacity: 0.55;
+}
+
+.pending-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.pending-label { font-size: 13px; color: var(--text2); }
+.pending-desc  { font-size: 11px; color: var(--text3); margin-left: auto; }
+
+/* ── REFRESH ── */
+.refresh-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.refresh-btn {
+  background: white;
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.14s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.refresh-btn:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
+
+.auto-refresh {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.7;
+}
+
+/* ── SPINNER ── */
+.spinner-wrap {
+  display: none;
+  text-align: center;
+  padding: 32px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.spinner-text { font-size: 13px; color: var(--text3); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .page { padding: 24px 14px 60px; }
+  .search-card { padding: 20px; }
+  .search-row { flex-direction: column; }
+  .order-meta-grid { grid-template-columns: 1fr; }
+  .step-name { font-size: 10px; }
+  .step-circle { width: 32px; height: 32px; font-size: 13px; }
+  .stepper-line { top: 16px; left: 16px; right: 16px; }
+  .stepper-progress { top: 16px; left: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand"><em>Pradeep</em> Sales</div>
+  <div class="header-sub">Order Tracking</div>
+  <a class="back-link" href="index.html">← Back to OMS</a>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- SEARCH -->
+  <div class="search-card">
+    <div class="search-heading">Track your <em>order</em></div>
+    <div class="search-sub">Enter the Order ID that was shared with you when your order was placed.</div>
+
+    <div class="search-row">
+      <input
+        type="text"
+        class="search-input"
+        id="trackInput"
+        placeholder="e.g. ORD-240901-001"
+        autocomplete="off"
+        autocapitalize="characters"
+      >
+      <button class="search-btn" onclick="trackOrder()">Track →</button>
+    </div>
+
+    <div class="search-hint">
+      Your Order ID starts with <strong>ORD-</strong> and was sent to you via WhatsApp or phone.
+    </div>
+  </div>
+
+  <!-- SPINNER -->
+  <div class="spinner-wrap" id="spinnerWrap">
+    <div class="spinner"></div>
+    <div class="spinner-text">Looking up your order…</div>
+  </div>
+
+  <!-- NOT FOUND -->
+  <div class="not-found" id="notFound">
+    <div class="not-found-icon">🔍</div>
+    <div class="not-found-title">Order not found</div>
+    <div class="not-found-sub">Please check the Order ID and try again, or contact Pradeep Sales on <strong>+91 XXXXX XXXXX</strong></div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result" id="result">
+
+    <!-- ORDER HEADER -->
+    <div class="order-header">
+      <div class="order-id-row">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:4px">Order ID</div>
+          <div class="order-id" id="res-id"></div>
+        </div>
+        <div id="res-status-pill"></div>
+      </div>
+      <div class="order-meta-grid" id="res-meta"></div>
+    </div>
+
+    <!-- ETA BANNER -->
+    <div class="eta-banner" id="res-eta"></div>
+
+    <!-- PROGRESS STEPPER -->
+    <div class="progress-card">
+      <div class="section-label">Order Progress</div>
+      <div class="stepper" id="res-stepper">
+        <div class="stepper-line"></div>
+        <div class="stepper-progress" id="stepperProgress" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline-card">
+      <div class="section-label">Activity Timeline</div>
+      <div class="timeline" id="res-timeline"></div>
+    </div>
+
+    <!-- PENDING STEPS -->
+    <div class="pending-card" id="res-pending-wrap">
+      <div class="section-label" style="margin-bottom:12px">Coming Up</div>
+      <div class="pending-steps" id="res-pending"></div>
+    </div>
+
+    <!-- REFRESH -->
+    <div class="refresh-row">
+      <button class="refresh-btn" onclick="refreshResult()">↻ Refresh Status</button>
+      <div class="auto-refresh"><div class="live-dot"></div> Live · updates every 30s</div>
+    </div>
+
+  </div><!-- /result -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <strong>Pradeep Sales</strong> · Authorised Distributor · Prayagraj, Uttar Pradesh<br>
+    Bajaj Genuine Parts · Varroc · Endurance · Goetze / FM-TPR
+  </div>
+
+</div><!-- /page -->
+
+<!-- Firebase v8 CDN -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+// ── Firebase config (same as app.js) ──
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDOjByXk815K4hRRSSNg8km6ufNKX6zokc",
+  authDomain:        "pradeep-sales-oms.firebaseapp.com",
+  projectId:         "pradeep-sales-oms",
+  storageBucket:     "pradeep-sales-oms.firebasestorage.app",
+  messagingSenderId: "1082894158097",
+  appId:             "1:1082894158097:web:450f01a58580b18fbee4b0"
+};
+
+const STATUSES = [
+  { key: 'received',   label: 'Received',   icon: '📥', desc: 'Order received by Pradeep Sales',          pill: 'spl-received'   },
+  { key: 'processing', label: 'Processing', icon: '⚙️',  desc: 'Order is being processed & picked',        pill: 'spl-processing' },
+  { key: 'billing',    label: 'Billing',    icon: '🧾', desc: 'Invoice being generated',                   pill: 'spl-billing'    },
+  { key: 'dispatched', label: 'Dispatched', icon: '🚚', desc: 'Order dispatched for delivery',             pill: 'spl-dispatched' },
+];
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.firestore();
+
+let currentOrderId  = null;
+let refreshInterval = null;
+
+// ── HELPERS ──
+
+function fmtDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) + '  ' +
+         d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true });
+}
+
+function fmtShort(ts) {
+  const d = new Date(ts);
+  return d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true });
+}
+
+function fmtMs(ms) {
+  if (ms < 60000) return `${Math.round(ms/1000)}s`;
+  if (ms < 3600000) return `${Math.round(ms/60000)} min`;
+  const h = Math.floor(ms/3600000), m = Math.round((ms%3600000)/60000);
+  return m ? `${h}h ${m}m` : `${h}h`;
+}
+
+const SLA = { normal: 120, urgent: 30, critical: 15 };
+
+function slaInfo(o) {
+  if (o.status === 'dispatched') return { st:'done', pct:100, rem:0, el:0 };
+  const limitMs = SLA[o.priority||'normal'] * 60000;
+  const el  = Date.now() - o.receivedAt;
+  const pct = Math.min(100, Math.round(el / limitMs * 100));
+  const rem = Math.max(0, limitMs - el);
+  return { st: pct >= 100 ? 'breach' : pct >= 75 ? 'warn' : 'ok', pct, rem, el };
+}
+
+// ── LOOKUP ──
+
+function trackOrder() {
+  const raw = document.getElementById('trackInput').value.trim().toUpperCase();
+  if (!raw) return;
+
+  const id = raw.startsWith('ORD-') ? raw : 'ORD-' + raw;
+
+  document.getElementById('result').style.display    = 'none';
+  document.getElementById('notFound').style.display  = 'none';
+  document.getElementById('spinnerWrap').style.display = 'block';
+
+  clearInterval(refreshInterval);
+  currentOrderId = id;
+
+  fetchAndRender(id);
+
+  // Auto-refresh every 30s
+  refreshInterval = setInterval(() => fetchAndRender(id), 30000);
+}
+
+function refreshResult() {
+  if (currentOrderId) fetchAndRender(currentOrderId);
+}
+
+function fetchAndRender(id) {
+  db.collection('orders').where('id', '==', id).limit(1).get()
+    .then(snap => {
+      document.getElementById('spinnerWrap').style.display = 'none';
+      if (snap.empty) {
+        document.getElementById('notFound').style.display = 'block';
+        document.getElementById('result').style.display   = 'none';
+      } else {
+        const raw  = snap.docs[0].data();
+        const order = {
+          ...raw,
+          receivedAt: raw.receivedAt?.toMillis ? raw.receivedAt.toMillis() : raw.receivedAt,
+          timeline: (raw.timeline||[]).map(t => ({
+            ...t,
+            ts: t.ts?.toMillis ? t.ts.toMillis() : t.ts,
+          })),
+        };
+        document.getElementById('notFound').style.display = 'none';
+        renderResult(order);
+        document.getElementById('result').style.display = 'block';
+      }
+    })
+    .catch(err => {
+      document.getElementById('spinnerWrap').style.display = 'none';
+      document.getElementById('notFound').style.display    = 'block';
+      console.error(err);
+    });
+}
+
+// ── RENDER ──
+
+function renderResult(o) {
+  const si = STATUSES.findIndex(s => s.key === o.status);
+
+  // ── Order ID & status pill ──
+  document.getElementById('res-id').textContent = o.id;
+  const st = STATUSES[si];
+  document.getElementById('res-status-pill').innerHTML =
+    `<span class="order-status-pill ${st.pill}">${st.label}</span>`;
+
+  // ── Meta grid ──
+  const srcMap = { whatsapp:'WhatsApp', phone:'Phone Call', salesman:'Salesman', portal:'Portal' };
+  const prioColors = { normal:'var(--green)', urgent:'var(--amber)', critical:'var(--red)' };
+  document.getElementById('res-meta').innerHTML = `
+    <div class="meta-item">
+      <div class="meta-key">Retailer</div>
+      <div class="meta-val">${o.retailer}</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-key">Order Source</div>
+      <div class="meta-val">${srcMap[o.source]||o.source}</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-key">Received</div>
+      <div class="meta-val">${fmtDate(o.receivedAt)}</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-key">Priority</div>
+      <div class="meta-val" style="color:${prioColors[o.priority]||'var(--text)'};font-weight:600;text-transform:capitalize">${o.priority||'normal'}</div>
+    </div>
+    ${o.area ? `<div class="meta-item"><div class="meta-key">Area / Route</div><div class="meta-val">${o.area}</div></div>` : ''}
+    ${o.remarks ? `<div class="meta-item" style="grid-column:span 2"><div class="meta-key">Remarks</div><div class="meta-val" style="font-size:12px;color:var(--text2)">${o.remarks}</div></div>` : ''}
+  `;
+
+  // ── ETA Banner ──
+  const sla    = slaInfo(o);
+  const etaEl  = document.getElementById('res-eta');
+
+  if (o.status === 'dispatched') {
+    const lastTs = o.timeline[o.timeline.length-1]?.ts;
+    etaEl.className = 'eta-banner green';
+    etaEl.innerHTML = `<div class="eta-icon">✅</div>
+      <div class="eta-text">
+        <strong>Your order has been dispatched!</strong>
+        ${lastTs ? `Left our warehouse at ${fmtShort(lastTs)}.` : ''} Please expect delivery soon.
+      </div>`;
+  } else if (sla.st === 'breach') {
+    etaEl.className = 'eta-banner red';
+    etaEl.innerHTML = `<div class="eta-icon">⚠️</div>
+      <div class="eta-text">
+        <strong>Delayed — our team is on it</strong>
+        We apologise for the delay. Your order is being prioritised right now.
+      </div>`;
+  } else if (sla.st === 'warn') {
+    etaEl.className = 'eta-banner amber';
+    etaEl.innerHTML = `<div class="eta-icon">⏳</div>
+      <div class="eta-text">
+        <strong>Almost ready — estimated ${fmtMs(sla.rem)}</strong>
+        Your order is in the final stages of preparation.
+      </div>`;
+  } else {
+    etaEl.className = 'eta-banner blue';
+    etaEl.innerHTML = `<div class="eta-icon">🕐</div>
+      <div class="eta-text">
+        <strong>Estimated ready in ${fmtMs(sla.rem)}</strong>
+        Your order is being processed. We'll have it ready for dispatch within the timeline.
+      </div>`;
+  }
+
+  // ── Stepper ──
+  const stepperEl  = document.getElementById('res-stepper');
+  const progressEl = document.getElementById('stepperProgress');
+  const progPct    = si === 0 ? 0 : Math.round((si / (STATUSES.length - 1)) * 100);
+
+  // Keep the static line divs, rebuild steps
+  const existingLines = stepperEl.querySelectorAll('.stepper-line, .stepper-progress');
+  stepperEl.innerHTML = '';
+  existingLines.forEach(el => stepperEl.appendChild(el.cloneNode(true)));
+
+  // Re-add line elements
+  stepperEl.innerHTML = `<div class="stepper-line"></div><div class="stepper-progress" style="width:${progPct}%"></div>`;
+
+  STATUSES.forEach((s, i) => {
+    const cls = i < si ? 'done' : i === si ? 'current' : 'pending';
+    const tEntry = o.timeline.find(t => t.status === s.key);
+    const timeStr = tEntry ? fmtShort(tEntry.ts) : '';
+
+    stepperEl.innerHTML += `
+      <div class="step ${cls}">
+        <div class="step-circle">${cls === 'done' ? '✓' : cls === 'current' ? s.icon : i+1}</div>
+        <div class="step-info">
+          <div class="step-name">${s.label}</div>
+          <div class="step-time">${timeStr || (cls === 'pending' ? 'Pending' : '')}</div>
+        </div>
+      </div>`;
+  });
+
+  // ── Timeline ──
+  const tlEl = document.getElementById('res-timeline');
+  let html = '';
+
+  // Completed steps from actual timeline
+  o.timeline.forEach((t, i) => {
+    const isLast = i === o.timeline.length - 1;
+    const cls    = isLast ? 'tl-current' : 'tl-done';
+    const badge  = isLast ? 'tb-current' : 'tb-done';
+    const label  = isLast ? 'Current' : 'Done';
+    const dur    = i > 0 ? fmtMs(t.ts - o.timeline[i-1].ts) : null;
+    const stInfo = STATUSES.find(s => s.key === t.status);
+
+    html += `
+      <div class="tl-row">
+        <div class="tl-dot ${cls}">${isLast ? stInfo?.icon||'●' : '✓'}</div>
+        <div class="tl-content">
+          <div class="tl-stage">${t.label}</div>
+          <div class="tl-when">${fmtDate(t.ts)}</div>
+          ${dur ? `<div class="tl-dur">⏱ ${dur} since previous stage</div>` : ''}
+        </div>
+        <div class="tl-badge ${badge}">${label}</div>
+      </div>`;
+  });
+
+  // Pending steps
+  STATUSES.slice(si + 1).forEach(s => {
+    html += `
+      <div class="tl-row">
+        <div class="tl-dot tl-pending">○</div>
+        <div class="tl-content">
+          <div class="tl-stage" style="color:var(--text3)">${s.label}</div>
+          <div class="tl-when">Pending</div>
+        </div>
+        <div class="tl-badge tb-pending">Upcoming</div>
+      </div>`;
+  });
+
+  tlEl.innerHTML = html;
+
+  // ── Pending card ──
+  const pendingWrap = document.getElementById('res-pending-wrap');
+  const pendingEl   = document.getElementById('res-pending');
+  const remaining   = STATUSES.slice(si + 1);
+
+  if (!remaining.length) {
+    pendingWrap.style.display = 'none';
+  } else {
+    pendingWrap.style.display = 'block';
+    pendingEl.innerHTML = remaining.map((s, i) => `
+      <div class="pending-step">
+        <div class="pending-num">${si + i + 2}</div>
+        <div class="pending-label">${s.icon} ${s.label}</div>
+        <div class="pending-desc">${s.desc}</div>
+      </div>`).join('');
+  }
+}
+
+// ── URL param auto-track ──
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const id     = params.get('id') || params.get('order');
+  if (id) {
+    document.getElementById('trackInput').value = id;
+    trackOrder();
+  }
+})();
+
+// ── Enter key ──
+document.getElementById('trackInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') trackOrder();
+});
+</script>
+</body>
+</html>
